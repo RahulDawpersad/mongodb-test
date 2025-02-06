@@ -8,14 +8,18 @@ const bcrypt = require('bcryptjs'); // Import bcryptjs for password hashing
 const dbPassword = 'FreeMongoDBVirus123!'; // replace with your password or URL encode it
 const dbUri = `mongodb+srv://designx:${dbPassword}@cluster0.gimhj.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
-// Connect to MongoDB Atlas
-mongoose.connect(dbUri)
-    .then(() => {
+// Connect to MongoDB Atlas with retry logic
+const connectMongoDB = async () => {
+    try {
+        await mongoose.connect(dbUri, { useNewUrlParser: true, useUnifiedTopology: true });
         console.log('Connected to MongoDB Atlas');
-    })
-    .catch(err => {
+    } catch (err) {
         console.error('Error connecting to MongoDB Atlas:', err);
-    });
+        setTimeout(connectMongoDB, 5000); // Retry after 5 seconds
+    }
+};
+
+connectMongoDB();
 
 // Define the User schema
 const userSchema = new mongoose.Schema({
@@ -28,7 +32,7 @@ const userSchema = new mongoose.Schema({
 const User = mongoose.model('User', userSchema);
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000; // Use Render's dynamic port
 
 // Middleware to parse request bodies
 app.use(bodyParser.urlencoded({ extended: true }));
