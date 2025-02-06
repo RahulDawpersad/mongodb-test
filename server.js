@@ -2,7 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const path = require('path');
-const bcrypt = require('bcrypt'); // Import bcrypt for password hashing
+const bcrypt = require('bcryptjs'); // Import bcryptjs for password hashing
 
 // MongoDB Atlas connection string
 const dbPassword = 'FreeMongoDBVirus123!'; // replace with your password or URL encode it
@@ -46,7 +46,7 @@ app.post('/register', async (req, res) => {
     const { username, email, password } = req.body;
 
     try {
-        // Hash the password using bcrypt with a saltRounds value of 10
+        // Hash the password using bcryptjs with a saltRounds value of 10
         const hashedPassword = await bcrypt.hash(password, 10);
 
         // Create a new user object with hashed password
